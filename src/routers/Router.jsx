@@ -4,6 +4,9 @@ import Home from "../Pages/Home/Home";
 import About from "../Pages/About/About";
 import Career from "../Pages/Career/Career";
 import Category from "../Pages/Category/Category";
+import Login from "../Pages/Login/Login";
+import Register from "../Pages/Register/Register";
+import AuthLayout from "../Layout/AuthLayout/AuthLayout";
 
 
 
@@ -28,7 +31,17 @@ const router = createBrowserRouter(
         },
         {
             path:'/auth',
-            element:<h2>Authentication Layout</h2>
+            element:<AuthLayout></AuthLayout>,
+            children:[
+                {
+                    path:'/auth/login',
+                    Component:Login
+                },
+                {
+                    path:'/auth/register',
+                    Component:Register
+                }
+            ]
         },
         {
             path:'/news',
