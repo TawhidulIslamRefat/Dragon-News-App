@@ -1,24 +1,24 @@
-import React, { use } from 'react';
-import { Link } from 'react-router';
+import React, { use, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { AuthContext } from '../../Provider/AuthProvider';
 
 const Login = () => {
-    
+    const [error,setError] = useState("");
   const {signIn,setUser} = use(AuthContext);
-
+  const location = useLocation();
+  const navigate = useNavigate();
    const handleLogin =(e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
-    console.log({email,password});
     signIn(email,password)
     .then(result => {
       const user = result.user;
       setUser(user);
-      console.log(user);
+      navigate(`${location.state? location.state:"/"}`)
     })
     .catch(error => {
-      console.log(error.message);
+      setError(error.message);
     })
    }
 
@@ -33,6 +33,9 @@ const Login = () => {
           <input type="email" name='email' className="input w-full text-[16px] font-normal mb-5 bg-[#F3F3F3]" placeholder="Enter your email address" />
           <label className="label text-xl font-semibold text-[#403F3F] mb-3">Password</label>
           <input type="password" name='password' className="input w-full text-[16px] font-normal mb-5 bg-[#F3F3F3]" placeholder="Enter your password" />
+          {
+            error && <p className='text-red-500'>{error}</p>
+          }
           <button type='submit' className="btn btn-neutral mt-4">Login</button>
         </fieldset>
        </form>

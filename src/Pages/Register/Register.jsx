@@ -1,25 +1,48 @@
-import React, { use } from 'react';
-import { Link } from 'react-router';
+import React, { use, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { AuthContext } from '../../Provider/AuthProvider';
 
 const Register = () => {
        
- const {createUser,setUser} = use(AuthContext);
+ const {createUser,setUser,updateUser} = use(AuthContext);
+ const [nameError,setNameError] = useState('');
+
+ const navigate = useNavigate();
+
 
     const handleRegister=(event) => {
         event.preventDefault();
         const name = event.target.name.value;
+        if (name.length < 5) {
+          setNameError("Name should be 5 character");
+          return;
+        }else{
+          setNameError("");
+        }
         const photo = event.target.photo.value;
         const email = event.target.email.value;
         const password = event.target.password.value;
-        console.log({name,password,email,photo}); 
         createUser(email,password)
         .then(result => {
             const user = result.user;
-            setUser(user);
+            updateUser({
+              displayName:name,
+              photoURL:photo,
+            })
+            .then(()=>{
+              setUser({...user,
+              displayName:name,
+              photoURL:photo,
+            });
+            navigate('/');
+            })
+            .catch(error => {
+              alert(error.message);
+              setUser(user);
+            })
         })
         .catch(error => {
-            console.log(error.message);
+           console.log(error.message);
         })   
     }
 
@@ -32,6 +55,11 @@ const Register = () => {
          <fieldset className="fieldset ">
           <label className="label text-xl font-semibold text-[#403F3F] mb-3">Your Name</label>
           <input type="text" name='name' className="input w-full text-[16px] font-normal mb-5 bg-[#F3F3F3]" placeholder="Enter your name" required />
+          {
+            nameError && <p className='text-xs text-red-400'>
+              {nameError}
+            </p>
+          }
           <label className="label text-xl font-semibold text-[#403F3F] mb-3">Photo URL</label>
           <input type="text" name='photo' className="input w-full text-[16px] font-normal mb-5 bg-[#F3F3F3]" placeholder="Enter your Photo URL" required />
           <label className="label text-xl font-semibold text-[#403F3F] mb-3">Email</label>
@@ -39,7 +67,7 @@ const Register = () => {
           <label className="label text-xl font-semibold text-[#403F3F] mb-3">Password</label>
           <input type="password" name='password' className="input w-full text-[16px] font-normal mb-5 bg-[#F3F3F3]" placeholder="Enter your password" required  />
            <label className="label">
-         <input type="checkbox" defaultChecked className="checkbox text-xl font-normal text-[#706F6F]" />
+         <input type="checkbox"className="checkbox text-xl font-normal text-[#706F6F]" />
          <span>Accept</span> Term & Conditions
         </label>
           <button type='submit' className="btn btn-neutral mt-4">Register</button>
